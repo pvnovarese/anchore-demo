@@ -31,7 +31,7 @@
       pkg:
       - docker-ce
       - docker-ce-cli
-      - containerd.io 
+      - containerd.io
   # Docker Compose
   - name: Install Docker Compose
     apt:
@@ -42,13 +42,11 @@
   - name: Download the docker-compose.yaml
     shell: "curl https://docs.anchore.com/current/docs/quickstart/docker-compose.yaml > docker-compose.yaml"
   # for opensource, comment out grabbing the license and login to hub
-  #- name: Grab license file
-  #  shell: "curl {{ license_url }} > license.yaml"
   - name: Copy license
     copy:
       src: ./license.yaml
       dest: /home/ubuntu/license.yaml
-  - name: login to docker hub
+  - name: Login to docker hub
     shell: "docker login -u {{ docker_user }} -p {{ docker_pass }}"
   - name: Start Anchore Engine
     shell: "docker-compose up -d"
