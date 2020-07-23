@@ -2,7 +2,7 @@
 #
 # Variables required:
 #
-# export AWS_ACCESS_KEY_ID=<your_access_key> 
+# export AWS_ACCESS_KEY_ID=<your_access_key>
 # export AWS_SECRET_ACCESS_KEY=<your_secret_key>
 # export AWS_SESSION_TOKEN=<your_session_token>
 #
@@ -18,14 +18,22 @@
 # export MY_IP=$(curl -s icanhazip.com)
 #
 # export DOCKER_USER=<your docker hub username>             # needed for enterprise images
-# export DOCKER_PASS=<your docker hub password> 
+# export DOCKER_PASS=<your docker hub password>
 #
-# export LICENSE_URL=<url of license file>                  # needed for enterprise
+# also if you want automatic provisioning of the license file, you'll need
+# to drop the license.yaml into the directory with the playbooks
 #
 # Usage:
-# 
-# ansible-playbook main.yml --private-key=$AWS_PRIVATE_KEY -e key_name=$AWS_KEYPAIR_NAME -e region=$AWS_REGION -e registry=$REGISTRY -e registry_user=$REGISTRY_USER -e registry_pass=$REGISTRY_PASS -e my_ip=$MY_IP -e docker_user=$DOCKER_USER -e docker_pass=$DOCKER_PASS -e license_url=$LICENSE_URL
-
+#
+# ansible-playbook main.yml --private-key=$AWS_PRIVATE_KEY \
+# -e key_name=$AWS_KEYPAIR_NAME \
+# -e region=$AWS_REGION \
+# -e registry=$REGISTRY \
+# -e registry_user=$REGISTRY_USER \
+# -e registry_pass=$REGISTRY_PASS \
+# -e my_ip=$MY_IP \
+# -e docker_user=$DOCKER_USER \
+# -e docker_pass=$DOCKER_PASS
 ---
 - name: provision
   include: provision.yml
@@ -33,3 +41,5 @@
   include: install.yml
 - name: add_registry
   include: add_registry.yml
+- name: get_jenkins_pw
+  include: get_jenkins_pw.yml
