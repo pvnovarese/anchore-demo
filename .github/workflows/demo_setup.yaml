@@ -107,17 +107,10 @@ jobs:
       run: |
         curl -sSfL https://anchorectl-releases.anchore.io/anchorectl/install.sh | sh -s -- -b ${HOME}/.local/bin v5.3.0
         export PATH="${HOME}/.local/bin/:${PATH}"
-
-    - name: Log in to the container registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}      
                     
     - name: Generate SBOM and push to Anchore
       run: |        
-        anchorectl image add --no-auto-subscribe --wait --from registry --dockerfile Dockerfile --force --annotation build_tool=github --annotation scan_type=distributed --annotation build=baseline ${IMAGE}
+        anchorectl image add --no-auto-subscribe --wait --dockerfile Dockerfile --force --annotation build_tool=github --annotation scan_type=centralized --annotation build=baseline ${IMAGE}
                 
   Final-Build:
     runs-on: ubuntu-latest
@@ -169,7 +162,7 @@ jobs:
                     
     - name: Generate SBOM and push to Anchore
       run: |        
-        anchorectl image add --no-auto-subscribe --wait --from registry --dockerfile Dockerfile --force --annotation build_tool=github --annotation scan_type=distributed --annotation build=final --application ${APPLICATION}@${VERSION} ${IMAGE}
+        anchorectl image add --no-auto-subscribe --wait --dockerfile Dockerfile --force --annotation build_tool=github --annotation scan_type=centralized --annotation build=final --application ${APPLICATION}@${VERSION} ${IMAGE}
 
     - name: Pull Vulnerability List
       run: |
