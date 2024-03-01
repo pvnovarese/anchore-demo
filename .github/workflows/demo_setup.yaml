@@ -30,11 +30,23 @@ env:
      
 jobs:
 
-  Source:
+  Environment:
     runs-on: ubuntu-latest
     steps:
+    - name: "Set variables"
+     run: |
+       echo "VERSION=$(date +%Y-%m-%d.%T)" >> $GITHUB_ENV
+       echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY}:${GITHUB_REF_NAME}" >> $GITHUB_ENV
+    outputs:
+      version: ${VERSION}
+      image: ${IMAGE}
+
+  Source:
+    runs-on: ubuntu-latest
+    needs: Environment
+    steps:
     
-    - name: "Set environmental variables"
+    - name: "Set variables"
       run: |
         echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY}:${GITHUB_REF_NAME}" >> $GITHUB_ENV
         echo "VERSION=$(date +%Y-%m-%d.%T)" >> $GITHUB_ENV
@@ -55,7 +67,7 @@ jobs:
         
     - name: Generate SBOM and Push to Anchore Enterprise
       run: |
-        syft -o syft-json . | anchorectl source add --wait ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}@${GITHUB_SHA:0:7} --application ${APPLICATION}@${VERSION} --from -
+        syft -o syft-json . | anchorectl source add --wait ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}@${GITHUB_SHA:0:7} --application ${APPLICATION}@${{ needs.Environment.outputs.version }} --from -
         
     - name: Pull Vulnerability List
       run: |
@@ -144,12 +156,13 @@ jobs:
 
   Final-Scan:
     runs-on: ubuntu-latest
-    needs: Final-Build
+    needs: [Environment, Final-Build]
     steps:
     
     - name: "Set IMAGE environmental variables"
       run: |
         echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY}:${GITHUB_REF_NAME}" >> $GITHUB_ENV
+        echo "VERSION=$(date +%Y-%m-%d.%T)" >> $GITHUB_ENV
         
     - name: Checkout code
       ### only need to do this if you want to pass the dockerfile to Anchore during scanning
@@ -162,7 +175,7 @@ jobs:
                     
     - name: Generate SBOM and push to Anchore
       run: |        
-        anchorectl image add --no-auto-subscribe --wait --dockerfile Dockerfile --force --annotation build_tool=github --annotation scan_type=centralized --annotation build=final --application ${APPLICATION}@${VERSION} ${IMAGE}
+        anchorectl image add --no-auto-subscribe --wait --dockerfile Dockerfile --force --annotation build_tool=github --annotation scan_type=centralized --annotation build=final --application ${APPLICATION}@${{ needs.Environment.outputs.version }} ${IMAGE}
 
     - name: Pull Vulnerability List
       run: |
