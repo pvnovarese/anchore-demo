@@ -34,9 +34,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: "Set variables"
-     run: |
-       echo "VERSION=$(date +%Y-%m-%d.%T)" >> $GITHUB_ENV
-       echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY}:${GITHUB_REF_NAME}" >> $GITHUB_ENV
+      run: |
+        echo "VERSION=$(date +%Y-%m-%d.%T)" >> $GITHUB_ENV
+        echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY}:${GITHUB_REF_NAME}" >> $GITHUB_ENV
     outputs:
       version: ${VERSION}
       image: ${IMAGE}
@@ -49,7 +49,6 @@ jobs:
     - name: "Set variables"
       run: |
         echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY}:${GITHUB_REF_NAME}" >> $GITHUB_ENV
-        echo "VERSION=$(date +%Y-%m-%d.%T)" >> $GITHUB_ENV
         
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -162,7 +161,6 @@ jobs:
     - name: "Set IMAGE environmental variables"
       run: |
         echo "IMAGE=${REGISTRY}/${GITHUB_REPOSITORY}:${GITHUB_REF_NAME}" >> $GITHUB_ENV
-        echo "VERSION=$(date +%Y-%m-%d.%T)" >> $GITHUB_ENV
         
     - name: Checkout code
       ### only need to do this if you want to pass the dockerfile to Anchore during scanning
